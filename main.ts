@@ -47,6 +47,12 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  *   get:
  *     summary: "Lista usuários"
  *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Filtra usuários pelo nome
  *     responses:
  *       200:
  *         description: Lista de usuários
@@ -90,10 +96,55 @@ app.get("/users/:id", async (req, res) => {
 
 /**
  * @swagger
+ * /plans:
+ *   get:
+ *     summary: "Lista planos disponíveis"
+ *     tags: [Plans]
+ *     responses:
+ *       200:
+ *         description: Lista de planos
+ */
+app.get("/plans", async (req, res) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM plans WHERE status = 'active'",
+  );
+  res.json(rows);
+});
+
+/**
+ * @swagger
  * /users:
  *   post:
  *     summary: "Cria novo usuário"
  *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *           example:
+ *             name: "João Silva"
+ *             email: "joao@example.com"
+ *             password: "senha_segura"
+ *     responses:
+ *       200:
+ *         description: Usuário criado com sucesso
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 1
  */
 app.post("/users", async (req, res) => {
   const { name, email, password } = req.body;
@@ -110,6 +161,16 @@ app.post("/users", async (req, res) => {
  *   delete:
  *     summary: "Remove usuário"
  *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário a ser removido
+ *     responses:
+ *       200:
+ *         description: Usuário removido
  */
 app.delete("/users/:id", async (req, res) => {
   const { id } = req.params;
@@ -123,6 +184,33 @@ app.delete("/users/:id", async (req, res) => {
  *   post:
  *     summary: "Assina um plano"
  *     tags: [Subscriptions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *               - plan_id
+ *             properties:
+ *               user_id:
+ *                 type: integer
+ *               plan_id:
+ *                 type: integer
+ *               coupon_code:
+ *                 type: string
+ *           example:
+ *             user_id: 1
+ *             plan_id: 2
+ *             coupon_code: "DESCONTO"
+ *     responses:
+ *       200:
+ *         description: Assinatura criada
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 123
  */
 app.post("/subscriptions", async (req, res) => {
   const { user_id, plan_id, coupon_code } = req.body;
@@ -146,6 +234,30 @@ app.post("/subscriptions", async (req, res) => {
  *   post:
  *     summary: "Simula pagamento"
  *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - invoice_id
+ *               - amount
+ *             properties:
+ *               invoice_id:
+ *                 type: integer
+ *               amount:
+ *                 type: number
+ *           example:
+ *             invoice_id: 45
+ *             amount: 50.00
+ *     responses:
+ *       200:
+ *         description: Pagamento processado
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
  */
 app.post("/payments", async (req, res) => {
   const { invoice_id, amount } = req.body;

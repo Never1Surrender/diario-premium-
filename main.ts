@@ -11,12 +11,13 @@ import mysql, {
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import cors from "cors";
+import "dotenv/config";
 
 const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "wrong_password",
+  password: process.env.DB_PASSWORD || "root",
   database: process.env.DB_NAME || "diario_premium",
   connectionLimit: 1,
 });
@@ -58,8 +59,22 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  *         description: Lista de usuários
  */
 app.get("/users", async (req, res) => {
-  const [rows] = await pool.query("SELECT * FROM users");
-  res.json(rows);
+  const { name } = req.query;
+  try {
+    let query = "SELECT id, name, email, status, created_at FROM users";
+    const params: any[] = [];
+
+    if (name) {
+      query += " WHERE name LIKE ?";
+      params.push(`%${name}%`);
+    }
+
+    const [rows] = await pool.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar usuários" });
+  }
 });
 
 /**
@@ -79,19 +94,24 @@ app.get("/users", async (req, res) => {
  */
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
-  const [rows] = await pool.query(`SELECT * FROM users WHERE id = ${id}`);
-  const user = (rows as any)[0];
+  try {
+    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+    const user = (rows as any)[0];
 
-  if (!user) {
-    res.json([]);
-    return;
+    if (!user) {
+      res.status(404).json({ message: "Usuário não encontrado" });
+      return;
+    }
+
+    const [addresses] = await pool.query(
+      "SELECT * FROM user_addresses WHERE user_id = ?",
+      [id],
+    );
+    res.json({ user, addresses });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar usuário" });
   }
-
-  const [addresses] = await pool.query(
-    "SELECT * FROM user_addresses WHERE id = ?",
-    [id],
-  );
-  res.json({ user, addresses });
 });
 
 /**
@@ -134,10 +154,16 @@ app.get("/plans", async (req, res) => {
  *                 type: string
  *               password:
  *                 type: string
+ *               cpf:
+ *                 type: string
+ *               phone:
+ *                 type: string
  *           example:
  *             name: "João Silva"
  *             email: "joao@example.com"
  *             password: "senha_segura"
+ *             cpf: "123.456.789-00"
+ *             phone: "(11) 99999-9999"
  *     responses:
  *       200:
  *         description: Usuário criado com sucesso
@@ -147,12 +173,32 @@ app.get("/plans", async (req, res) => {
  *               id: 1
  */
 app.post("/users", async (req, res) => {
-  const { name, email, password } = req.body;
-  const [result] = await pool.query(
-    "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
-    [name, email, password],
-  );
-  res.json({ id: (result as any).insertId });
+  const { name, email, password, cpf, phone } = req.body;
+
+  if (!name || !email || !password) {
+    res
+      .status(400)
+      .json({ error: "Dados obrigatórios ausentes (name, email, password)" });
+    return;
+  }
+
+  try {
+    const [result] = await pool.query(
+      "INSERT INTO users (name, email, password_hash, cpf, phone) VALUES (?, ?, ?, ?, ?)",
+      [name, email, password, cpf || null, phone || null],
+    );
+    res.status(201).json({
+      message: "Usuário cadastrado com sucesso",
+      id: (result as any).insertId,
+    });
+  } catch (error: any) {
+    console.error(error);
+    if (error.code === "ER_DUP_ENTRY") {
+      res.status(409).json({ error: "Email ou CPF já cadastrado" });
+    } else {
+      res.status(500).json({ error: "Erro ao cadastrar usuário" });
+    }
+  }
 });
 
 /**

@@ -46,27 +46,59 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  * @swagger
  * /users:
  *   get:
- *     summary: "Lista usuários"
+ *     summary: "Lista usuários com filtros"
  *     tags: [Users]
  *     parameters:
  *       - in: query
  *         name: name
  *         schema:
  *           type: string
- *         description: Filtra usuários pelo nome
+ *         description: Filtra usuários pelo nome (LIKE)
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *         description: Filtra usuários pelo e-mail
+ *       - in: query
+ *         name: cpf
+ *         schema:
+ *           type: string
+ *         description: Filtra usuários pelo CPF
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive, blocked]
+ *         description: Filtra usuários pelo status
  *     responses:
  *       200:
- *         description: Lista de usuários
+ *         description: Lista de usuários filtrada
  */
 app.get("/users", async (req, res) => {
-  const { name } = req.query;
+  const { name, email, cpf, status } = req.query;
   try {
-    let query = "SELECT id, name, email, status, created_at FROM users";
+    let query =
+      "SELECT id, name, email, cpf, status, created_at FROM users WHERE 1=1";
     const params: any[] = [];
 
     if (name) {
-      query += " WHERE name LIKE ?";
+      query += " AND name LIKE ?";
       params.push(`%${name}%`);
+    }
+
+    if (email) {
+      query += " AND email = ?";
+      params.push(email);
+    }
+
+    if (cpf) {
+      query += " AND cpf = ?";
+      params.push(cpf);
+    }
+
+    if (status) {
+      query += " AND status = ?";
+      params.push(status);
     }
 
     const [rows] = await pool.query(query, params);

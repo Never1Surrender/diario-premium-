@@ -15,9 +15,9 @@ import cors from "cors";
 const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 3306,
-  user: "wrong_user",
-  password: "wrong_password",
-  database: "diario_premium",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "wrong_password",
+  database: process.env.DB_NAME || "diario_premium",
   connectionLimit: 1,
 });
 

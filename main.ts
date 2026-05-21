@@ -27,10 +27,9 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "API de Assinaturas (BUGADA) — Diário Premium",
+      title: "API de Assinaturas",
       version: "1.0.0",
-      description:
-        "Documentação da API com BUGS INTENCIONAIS para treinamento.",
+      description: "Documentação da API de Assinaturas.",
     },
     servers: [{ url: "http://localhost:3000" }],
   },
@@ -44,7 +43,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
  * @swagger
  * /users:
  *   get:
- *     summary: "Lista usuários (BUG: Sem paginação e sem filtro de status)"
+ *     summary: "Lista usuários"
  *     tags: [Users]
  *     responses:
  *       200:
@@ -91,7 +90,7 @@ app.get("/users/:id", async (req, res) => {
  * @swagger
  * /users:
  *   post:
- *     summary: "Cria novo usuário (BUG: Sem validação e senha em texto puro)"
+ *     summary: "Cria novo usuário"
  *     tags: [Users]
  */
 app.post("/users", async (req, res) => {
@@ -107,7 +106,7 @@ app.post("/users", async (req, res) => {
  * @swagger
  * /users/{id}:
  *   delete:
- *     summary: "Remove usuário (BUG: Deleta mesmo com assinatura ativa)"
+ *     summary: "Remove usuário"
  *     tags: [Users]
  */
 app.delete("/users/:id", async (req, res) => {
@@ -120,7 +119,7 @@ app.delete("/users/:id", async (req, res) => {
  * @swagger
  * /subscriptions:
  *   post:
- *     summary: "Assina um plano (BUG: Race Condition e cupom sem validação)"
+ *     summary: "Assina um plano"
  *     tags: [Subscriptions]
  */
 app.post("/subscriptions", async (req, res) => {
@@ -143,7 +142,7 @@ app.post("/subscriptions", async (req, res) => {
  * @swagger
  * /payments:
  *   post:
- *     summary: "Simula pagamento (BUG: Não usa transação)"
+ *     summary: "Simula pagamento"
  *     tags: [Payments]
  */
 app.post("/payments", async (req, res) => {
@@ -166,7 +165,7 @@ app.post("/payments", async (req, res) => {
  * @swagger
  * /reports/revenue:
  *   get:
- *     summary: "Relatório de receita (BUG: Consulta lenta/N+1 no código)"
+ *     summary: "Relatório de receita"
  *     tags: [Reports]
  */
 app.get("/reports/revenue", async (req, res) => {

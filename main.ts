@@ -127,7 +127,10 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
+    const [rows] = await pool.query(
+      "SELECT id, name, email, cpf, phone, status, email_verified_at, created_at, updated_at FROM users WHERE id = ?",
+      [id],
+    );
     const user = (rows as any)[0];
 
     if (!user) {
@@ -136,7 +139,7 @@ app.get("/users/:id", async (req, res) => {
     }
 
     const [addresses] = await pool.query(
-      "SELECT * FROM user_addresses WHERE user_id = ?",
+      "SELECT id, label, street, number, complement, district, city, state, zip_code, is_default FROM user_addresses WHERE user_id = ?",
       [id],
     );
     res.json({ user, addresses });

@@ -296,17 +296,29 @@ app.delete("/users/:id", async (req, res) => {
 app.post("/subscriptions", async (req, res) => {
   const { user_id, plan_id, coupon_code } = req.body;
 
-  let price = 100;
-  if (coupon_code === "DESCONTO") {
-    price = 50;
+  try {
+    let price = 100;
+    if (coupon_code === "DESCONTO") {
+      price = 50;
+    }
+
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const nextMonthStr = nextMonth.toISOString().split("T")[0];
+
+    const [result] = await pool.query(
+      `INSERT INTO subscriptions 
+        (user_id, plan_id, price_at_signup, status, starts_at, current_period_start, current_period_end) 
+      VALUES (?, ?, ?, 'active', ?, ?, ?)`,
+      [user_id, plan_id, price, today, today, nextMonthStr],
+    );
+
+    res.json({ id: (result as any).insertId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao criar assinatura" });
   }
-
-  const [result] = await pool.query(
-    "INSERT INTO subscriptions (user_id, plan_id, price_at_signup, status) VALUES (?, ?, ?, 'active')",
-    [user_id, plan_id, price],
-  );
-
-  res.json({ id: (result as any).insertId });
 });
 
 /**

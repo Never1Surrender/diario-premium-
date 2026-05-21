@@ -1,0 +1,23 @@
+services:
+  banco:
+    image: mariadb:12-ubi
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ./bkp.sql:/docker-entrypoint-initdb.d/bkp.sql
+      - ./docker/mariadb:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+    environment:
+      PORT: 3000
+      DB_HOST: localhost
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: diario_premium
+    ports:
+      - 3000:3000

@@ -10,6 +10,7 @@ import mysql, {
 } from "mysql2/promise";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import cors from "cors";
 
 const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
@@ -21,6 +22,7 @@ const pool: Pool = mysql.createPool({
 });
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const swaggerOptions = {

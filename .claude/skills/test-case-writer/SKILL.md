@@ -1,19 +1,26 @@
 ---
 name: test-case-writer
 description: Gera casos de teste no formato padrão de QA (Objetivo, Pré-condições,
-Passos para reproduzir, Resultado esperado). Use quando o usuário pedir para
-"criar um caso de teste", "gerar casos de teste", "escrever test cases", "documentar
-teste para essa funcionalidade" ou "criar TC para". Funciona a partir da descrição
-de uma funcionalidade, do código-fonte, ou de telas do sistema.
+Passos para reproduzir, Resultado esperado) e cria a página correspondente
+diretamente no Notion via MCP, preenchendo Status, Módulo, Tipo, Prioridade e ID
+automaticamente. Use quando o usuário pedir para "criar um caso de teste", "gerar
+casos de teste", "escrever test cases", "documentar teste para essa funcionalidade",
+"criar TC para", "subir caso de teste no Notion" ou "criar página de teste no
+Notion". Funciona a partir da descrição de uma funcionalidade, do código-fonte, ou
+de telas do sistema.
 ---
 
 # Test Case Writer
 
 ## Visão geral
 
-Gerar casos de teste completos, no formato usado pela equipe de QA, prontos pra
-serem documentados (ex: colados no Notion). Cada caso de teste deve ser claro o
-suficiente pra qualquer pessoa do time reproduzir sem depender de quem escreveu.
+Gerar casos de teste completos, no formato usado pela equipe de QA, e criar
+a página correspondente diretamente no Notion (via MCP), com os campos de
+Status, Módulo, Tipo, Prioridade e ID preenchidos automaticamente conforme
+as regras do projeto. Cada caso de teste deve ser claro o suficiente pra
+qualquer pessoa do time reproduzir sem depender de quem escreveu, e deve
+respeitar a estrutura de campos já existente no database daquele projeto
+específico.
 
 ## Passo 1: Levantar o contexto
 
@@ -57,8 +64,15 @@ Título: [até 60 caracteres, resumindo o objetivo do teste]
 [Texto corrido, em prosa — sem numerar ou rotular passos aqui dentro. O que
 deveria acontecer se o sistema estivesse funcionando 100%.]
 ❌ Resultado atual (preencher apenas se houver bug)
-[O que realmente aconteceu — deixar em branco se o teste ainda não foi executado
-ou não houve bug]
+[REGRA OBRIGATÓRIA: este campo só deve conter texto se o teste foi executado
+E um bug foi identificado. Em qualquer outro caso — teste ainda não
+executado, teste executado com sucesso, ou você não tem informação sobre
+o resultado real — este campo deve ficar EXATAMENTE vazio (sem texto, sem
+"N/A", sem "não testado ainda", sem nenhum preenchimento).
+
+Antes de escrever qualquer coisa neste campo, pergunte-se: "Eu tenho uma
+confirmação real de que um erro ocorreu?" Se a resposta for não, deixe em
+branco.]
 ✅ Checklist de Validação
 
  Web: Testado no fluxo principal da funcionalidade.
@@ -83,8 +97,8 @@ Antes de entregar, confirmar:
 - [ ] Passos para reproduzir são objetivos e na ordem correta
 - [ ] Pré-condições cobrem tudo que é necessário pro teste ser executado
       isoladamente
-- [ ] "Resultado atual" e "Impacto observado" ficam em branco se não houver
-      bug ainda — não preencher com suposição
+- [ ] "Resultado atual" segue a REGRA OBRIGATÓRIA do Passo 3: está vazio,
+      a menos que haja confirmação real de bug identificado
 - [ ] Nenhum comportamento foi presumido sem confirmação (ex: mensagens de
       erro específicas, textos exatos) — se não tiver certeza, sinalizar como
       suposição em vez de afirmar
@@ -95,24 +109,15 @@ Antes de entregar, confirmar:
 
 Antes de criar a página no Notion:
 
-1. **Status**: definir sempre como "Em execução" no momento da criação.
-   Nunca presumir Aprovado, Aberto/Bug, Triagem, Corrigido ou Revalidado —
-   esses dependem de execução real ou ação humana. Ver
-   `references/status-reference.md` para a lista completa.
+Antes de criar a página no Notion, definir os seguintes campos, nesta ordem:
 
-2. **Módulo, Tipo, Prioridade**: consultar o schema do database via MCP para
-   ver as opções já existentes. Se o cenário corresponder claramente a uma
-   opção, preencher. Se não houver correspondência clara, perguntar ao
-   usuário em vez de criar uma opção nova ou deixar em branco. Ver
-   `references/multiselect-fields-reference.md`.
-
+1. **Status**: sempre "Em execução" na criação. Ver `references/status-reference.md`.
+2. **Módulo, Tipo, Prioridade**: consultar o schema do database e preencher
+   ou perguntar conforme necessário. Ver `references/multiselect-fields-reference.md`.
 3. **ID/número sequencial**: consultar o database para descobrir o último
-   número usado com aquele prefixo, e usar o próximo disponível. Nunca
-   presumir ou perguntar ao usuário um número manualmente.
-
-4. **Colunas ausentes**: se o database desse projeto não tiver alguma
-   coluna esperada (ex: sem campo de Prioridade), avisar o usuário em vez
-   de tentar criar a coluna ou ignorar o campo silenciosamente.
+   número usado com aquele prefixo e usar o próximo disponível.
+4. **Colunas ausentes**: se alguma coluna esperada não existir no database
+   desse projeto, avisar o usuário em vez de criar ou ignorar silenciosamente.
 
 ## Passo 6: Confirmar antes de criar no Notion
 

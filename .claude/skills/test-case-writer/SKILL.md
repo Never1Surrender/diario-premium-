@@ -91,7 +91,40 @@ Antes de entregar, confirmar:
 - [ ] Checklist de Validação incluído completo, com todos os itens desmarcados
       por padrão (o usuário marca depois de executar)
 
-## Passo 5: Perguntar se há mais casos a cobrir
+## Passo 5: Definir status inicial e campos do Notion
 
-Depois de gerar o primeiro caso, perguntar se o usuário quer cobrir variações
-(ex: caminho de erro, campos obrigatórios, permissões) antes de encerrar.
+Antes de criar a página no Notion:
+
+1. **Status**: definir sempre como "Em execução" no momento da criação.
+   Nunca presumir Aprovado, Aberto/Bug, Triagem, Corrigido ou Revalidado —
+   esses dependem de execução real ou ação humana. Ver
+   `references/status-reference.md` para a lista completa.
+
+2. **Módulo, Tipo, Prioridade**: consultar o schema do database via MCP para
+   ver as opções já existentes. Se o cenário corresponder claramente a uma
+   opção, preencher. Se não houver correspondência clara, perguntar ao
+   usuário em vez de criar uma opção nova ou deixar em branco. Ver
+   `references/multiselect-fields-reference.md`.
+
+3. **ID/número sequencial**: consultar o database para descobrir o último
+   número usado com aquele prefixo, e usar o próximo disponível. Nunca
+   presumir ou perguntar ao usuário um número manualmente.
+
+4. **Colunas ausentes**: se o database desse projeto não tiver alguma
+   coluna esperada (ex: sem campo de Prioridade), avisar o usuário em vez
+   de tentar criar a coluna ou ignorar o campo silenciosamente.
+
+## Passo 6: Confirmar antes de criar no Notion
+
+Mostrar um resumo dos campos que serão preenchidos (Título, Módulo, Tipo,
+Prioridade, Status) e pedir confirmação do usuário antes de criar a página
+de fato — a menos que o usuário já tenha pedido explicitamente para criar
+direto, sem revisão.
+
+## Passo 7: Perguntar se há mais casos a cobrir
+
+Para os valores válidos de Status e quando usar cada um, consulte
+`references/status-reference.md`.
+
+Para o processo de preenchimento de Módulo, Tipo e Prioridade, consulte 
+`references/multiselect-fields-reference.md`.

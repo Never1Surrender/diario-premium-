@@ -51,3 +51,30 @@ Observar:
 - [ ] Escopo é específico o suficiente pra ser útil
 
 ## Exemplos
+
+**Diff:** novo endpoint `POST /coupons` em `main.ts`, com bloco `@swagger` e validação de campos obrigatórios.
+**Mensagem:**
+```
+feat(coupons): adiciona endpoint de criação de cupons
+```
+
+**Diff:** correção em `main.ts` onde `pool.query` concatenava o CPF diretamente na string SQL em vez de usar `?`.
+**Mensagem:**
+```
+fix(users): usa parâmetro preparado na busca por CPF
+
+Corrige concatenação direta do CPF na query, que abria brecha
+para injeção SQL.
+```
+
+**Diff:** atualização do `DATABASE_EXPLANATION.md` descrevendo a tabela `refunds`.
+**Mensagem:**
+```
+docs(database): documenta estrutura da tabela refunds
+```
+
+**Diff:** mudanças em `compose.yml` e `.env.example` ajustando `DB_HOST` do serviço `app`.
+**Mensagem:**
+```
+chore(docker): ajusta DB_HOST do serviço app no compose
+```

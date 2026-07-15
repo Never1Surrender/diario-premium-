@@ -109,6 +109,17 @@ Antes de escrever qualquer coisa neste campo, pergunte-se: "Eu tenho uma
 confirmação real de que um erro ocorreu?" Se a resposta for não, deixe em
 branco.
 
+REGRA DE LINGUAGEM: se a fonte da informação for um log técnico, stack
+trace, ou mensagem de erro de código (ex: "unhandled rejection",
+referências a arquivo/linha, nomes de funções internas), NÃO copiar esse
+texto bruto direto para este campo. Primeiro, escrever um resumo em
+linguagem simples do que aconteceu, sem jargão técnico — qualquer pessoa
+do time (mesmo sem background técnico) deve entender o que quebrou e por
+quê, em termos práticos (ex: "o sistema trava e para de responder a
+qualquer pedido" em vez de "o processo Node é derrubado"). O log técnico
+original pode ser incluído depois, na seção de Evidências, como
+complemento — nunca como substituto do resumo em linguagem simples.
+
 ✅ Checklist de Validação
 - [ ] Web: Testado no fluxo principal da funcionalidade.
 - [ ] Mobile: Testado em dispositivos móveis (Android/iOS), quando aplicável.
@@ -154,6 +165,11 @@ Antes de criar a página no Notion, definir os seguintes campos, nesta ordem
    número usado com aquele prefixo e usar o próximo disponível.
 4. **Colunas ausentes**: se alguma coluna esperada não existir no database
    desse projeto, avisar o usuário em vez de criar ou ignorar silenciosamente.
+5. **GitHub issue (link) e Title issue (texto)**, se essas colunas
+   existirem no database: sempre deixar ambas vazias na criação do caso de
+   teste. Esses campos só são preenchidos depois, pelo skill
+   `issue-writer`, quando um bug for confirmado e uma issue for aberta —
+   nunca no momento em que o caso de teste é criado.
 
 ## Passo 7: Confirmar antes de criar no Notion
 
